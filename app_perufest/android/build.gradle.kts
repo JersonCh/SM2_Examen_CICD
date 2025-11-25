@@ -1,6 +1,7 @@
 import java.util.Properties
 import java.io.FileInputStream
 import com.android.build.gradle.LibraryExtension
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 // Provide legacy Flutter extension values for plugins expecting Groovy build scripts
 extensions.extraProperties.apply {
@@ -40,6 +41,23 @@ subprojects {
         extensions.configure<com.android.build.gradle.LibraryExtension>("android") {
             val flutterExt = rootProject.extensions.extraProperties.get("flutter")
             extensions.extraProperties.set("flutter", flutterExt)
+            compileSdk = 36
+
+            defaultConfig {
+                minSdk = 23
+                targetSdk = 36
+            }
+
+            compileOptions {
+                sourceCompatibility = JavaVersion.VERSION_11
+                targetCompatibility = JavaVersion.VERSION_11
+            }
+        }
+    }
+
+    tasks.withType<KotlinCompile>().configureEach {
+        kotlinOptions {
+            jvmTarget = JavaVersion.VERSION_11.toString()
         }
     }
 }
