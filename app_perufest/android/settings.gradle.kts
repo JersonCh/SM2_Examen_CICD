@@ -26,3 +26,23 @@ plugins {
 }
 
 include(":app")
+
+// Configuración global para todos los módulos
+gradle.beforeProject {
+    // Aplicar configuración de SDK a todos los proyectos Android
+    plugins.withId("com.android.library") {
+        configure<com.android.build.gradle.LibraryExtension> {
+            compileSdk = 36
+            
+            defaultConfig {
+                minSdk = 23
+                targetSdk = 36
+            }
+            
+            compileOptions {
+                sourceCompatibility = JavaVersion.VERSION_11
+                targetCompatibility = JavaVersion.VERSION_11
+            }
+        }
+    }
+}
