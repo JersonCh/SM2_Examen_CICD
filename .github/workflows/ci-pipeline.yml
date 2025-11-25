@@ -1,0 +1,75 @@
+name: Mobile CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    # IMPORTANTE: Usamos ubuntu-latest para compilar Android/Web gratis.
+    # No usar macos-latest (es de pago o consume créditos rápido).
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Descargar el código del repositorio
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # 2. Configurar el entorno (Java para Android, Flutter, o Node)
+      # --- TU TAREA: DESCOMENTAR SOLO LO QUE USES ---
+      
+      # OPCIÓN A: FLUTTER
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+      
+      # OPCIÓN B: ANDROID NATIVO / REACT NATIVE
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      
+      # OPCIÓN C: REACT NATIVE (Adicional a Java)
+      # - uses: actions/setup-node@v3
+      #   with:
+      #     node-version: 18
+
+      # 3. Instalar Dependencias
+      - name: Install Dependencies
+        run: |
+          cd app_perufest
+          flutter pub get
+        # Ej: flutter pub get | npm install | ./gradlew assemble
+
+      # 4. Análisis de Calidad (Linting)
+      # Si el código está mal escrito, el proceso debe fallar aquí.
+      - name: Code Quality Check
+        run: |
+          cd app_perufest
+          flutter analyze --no-fatal-infos
+
+      # 5. Ejecutar Pruebas Unitarias
+      # Aquí se validarán las 5 funciones que creaste en la Parte 1.
+      - name: Run Unit Tests
+        run: |
+          cd app_perufest
+          flutter test test/utils/validators_test.dart
+
+      # 6. Construir el Instalable (Build)
+      # Generar el APK de Android.
+      - name: Build Application
+        run: |
+          cd app_perufest
+          flutter build apk --release
+
+      # 7. Subir el Artefacto (Entregable final)
+      # Esto permite descargar el APK desde GitHub.
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          # TU TAREA: Busca dónde guarda tu framework el APK y pon la ruta.
+          # Usa la tabla de ayuda del examen si no sabes la ruta.
+          path: app_perufest/build/app/outputs/flutter-apk/*.apk
