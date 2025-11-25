@@ -23,7 +23,8 @@ jobs:
       # OPCIÓN A: FLUTTER
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
+          flutter-version: '3.27.0'
+          channel: 'stable'
       
       # OPCIÓN B: ANDROID NATIVO / REACT NATIVE
       - uses: actions/setup-java@v3
